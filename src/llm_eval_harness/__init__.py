@@ -33,3 +33,5 @@ __all__ = [
     "builtin_registry",
     "load_responses_file",
 ]
+
+__version__ = "0.1.0"
