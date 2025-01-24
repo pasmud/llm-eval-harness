@@ -27,3 +27,16 @@ def _build_parser() -> argparse.ArgumentParser:
             "Run suites against static responses, validate inputs, and inspect case inventories."
         ),
     )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="%(prog)s 0.1.0",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    run_parser = subparsers.add_parser(
+        "run",
+        help="Run an evaluation suite against a responses file.",
+        description="Execute all cases in a suite using deterministic static responses.",
+    )
+    run_parser.add_argument("--suite", required=True, help="Path to suite JSON file.")
