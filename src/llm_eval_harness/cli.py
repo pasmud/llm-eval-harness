@@ -40,3 +40,27 @@ def _build_parser() -> argparse.ArgumentParser:
         description="Execute all cases in a suite using deterministic static responses.",
     )
     run_parser.add_argument("--suite", required=True, help="Path to suite JSON file.")
+    run_parser.add_argument(
+        "--responses",
+        required=True,
+        help="Path to responses JSON file mapping case ids to response strings.",
+    )
+    run_parser.add_argument(
+        "--format",
+        choices=["json", "text"],
+        default="text",
+        help="Output format (default: text).",
+    )
+    run_parser.add_argument(
+        "--output",
+        help="Write report to a file instead of stdout.",
+    )
+    run_parser.add_argument(
+        "--fail-fast",
+        action="store_true",
+        help="Stop evaluating checks for a case after the first failure.",
+    )
+    run_parser.add_argument(
+        "--default-response",
+        help="Fallback response used when a case id is missing from the responses file.",
+    )
