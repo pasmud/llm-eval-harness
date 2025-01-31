@@ -64,3 +64,15 @@ def _build_parser() -> argparse.ArgumentParser:
         "--default-response",
         help="Fallback response used when a case id is missing from the responses file.",
     )
+    run_parser.set_defaults(func=_cmd_run)
+
+    check_parser = subparsers.add_parser(
+        "check",
+        help="Validate suite and optional responses files.",
+        description="Validate schema/structure of suite and response inputs without running evaluations.",
+    )
+    check_parser.add_argument("--suite", required=True, help="Path to suite JSON file.")
+    check_parser.add_argument(
+        "--responses",
+        help="Optional responses JSON file to validate against the suite.",
+    )
