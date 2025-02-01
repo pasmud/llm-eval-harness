@@ -76,3 +76,23 @@ def _build_parser() -> argparse.ArgumentParser:
         "--responses",
         help="Optional responses JSON file to validate against the suite.",
     )
+    check_parser.add_argument(
+        "--format",
+        choices=["json", "text"],
+        default="text",
+        help="Output format (default: text).",
+    )
+    check_parser.set_defaults(func=_cmd_check)
+
+    scan_parser = subparsers.add_parser(
+        "scan",
+        help="Scan a suite and list its cases and checks.",
+        description="Inspect a suite definition and report case inventory.",
+    )
+    scan_parser.add_argument("--suite", required=True, help="Path to suite JSON file.")
+    scan_parser.add_argument(
+        "--format",
+        choices=["json", "text"],
+        default="text",
+        help="Output format (default: text).",
+    )
