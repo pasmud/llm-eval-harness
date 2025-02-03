@@ -96,3 +96,21 @@ def _build_parser() -> argparse.ArgumentParser:
         default="text",
         help="Output format (default: text).",
     )
+    scan_parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Include check details for each case in text output.",
+    )
+    scan_parser.set_defaults(func=_cmd_scan)
+
+    list_parser = subparsers.add_parser(
+        "list-evaluators",
+        help="List built-in evaluator types.",
+        description="Show the evaluator types available in the built-in registry.",
+    )
+    list_parser.add_argument(
+        "--format",
+        choices=["json", "text"],
+        default="text",
+        help="Output format (default: text).",
+    )
