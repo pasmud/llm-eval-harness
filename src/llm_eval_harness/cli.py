@@ -114,3 +114,20 @@ def _build_parser() -> argparse.ArgumentParser:
         default="text",
         help="Output format (default: text).",
     )
+    list_parser.set_defaults(func=_cmd_list_evaluators)
+
+    return parser
+
+
+def _emit(text: str, output: str | None) -> None:
+    if output:
+        Path(output).write_text(text, encoding="utf-8")
+    else:
+        sys.stdout.write(text)
+        if not text.endswith("\n"):
+            sys.stdout.write("\n")
+
+
+def _format_text_report(result: dict[str, Any]) -> str:
+    lines: list[str] = []
+    lines.append(f"Suite: {result['suite_name']} (v{result['suite_version']})")
