@@ -131,3 +131,17 @@ def _emit(text: str, output: str | None) -> None:
 def _format_text_report(result: dict[str, Any]) -> str:
     lines: list[str] = []
     lines.append(f"Suite: {result['suite_name']} (v{result['suite_version']})")
+    lines.append(
+        f"Result: {'PASS' if result['success'] else 'FAIL'} "
+        f"({result['passed']}/{result['total']} passed, "
+        f"{result['failed']} failed, {result['errors']} errors)"
+    )
+    lines.append(f"Pass rate: {result['pass_rate']:.2%}")
+    lines.append("")
+    for case in result["case_results"]:
+        verdict = case["verdict"].upper()
+        lines.append(f"[{verdict}] {case['case_id']} - {case['checks_passed']}/{case['checks_total']} checks")
+        for outcome in case["outcomes"]:
+            marker = "ok" if outcome["passed"] else outcome["verdict"].upper()
+            lines.append(f"  - ({marker}) {outcome['evaluator']}: {outcome['message']}")
+    return "\n".join(lines) + "\n"
