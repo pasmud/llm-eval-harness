@@ -159,3 +159,17 @@ def _cmd_run(args: argparse.Namespace) -> int:
         text = json.dumps(payload, indent=2, sort_keys=False) + "\n"
     else:
         text = _format_text_report(payload)
+    _emit(text, args.output)
+    return EXIT_SUCCESS if result.success else EXIT_FAILURE
+
+
+def _cmd_check(args: argparse.Namespace) -> int:
+    suite_path = Path(args.suite)
+    try:
+        data = json.loads(suite_path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        raise EvaluationError(f"unable to read suite file '{suite_path}': {exc}") from exc
+    except json.JSONDecodeError as exc:
+        raise EvaluationError(f"invalid JSON in suite file '{suite_path}': {exc}") from exc
+
+    suite = Suite.from_dict(data)
