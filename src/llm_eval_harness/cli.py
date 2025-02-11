@@ -145,3 +145,17 @@ def _format_text_report(result: dict[str, Any]) -> str:
             marker = "ok" if outcome["passed"] else outcome["verdict"].upper()
             lines.append(f"  - ({marker}) {outcome['evaluator']}: {outcome['message']}")
     return "\n".join(lines) + "\n"
+
+
+def _cmd_run(args: argparse.Namespace) -> int:
+    harness = EvaluationHarness(fail_fast=args.fail_fast)
+    result = harness.run_suite_from_files(
+        suite_path=args.suite,
+        responses_path=args.responses,
+        default_response=args.default_response,
+    )
+    payload = result.to_dict()
+    if args.format == "json":
+        text = json.dumps(payload, indent=2, sort_keys=False) + "\n"
+    else:
+        text = _format_text_report(payload)
