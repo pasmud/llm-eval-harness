@@ -173,3 +173,46 @@ def _cmd_check(args: argparse.Namespace) -> int:
         raise EvaluationError(f"invalid JSON in suite file '{suite_path}': {exc}") from exc
 
     suite = Suite.from_dict(data)
+    report: dict[str, Any] = {
+        "ok": True,
+        "suite": {
+            "path": str(suite_path),
+            "name": suite.name,
+            "version": suite.version,
+            "cases": len(suite.cases),
+            "checks": sum(len(case.checks) for case in suite.cases),
+        },
+        "issues": [],
+    }
+
+    if args.responses:
+        responses = load_responses_file(args.responses)
+        report["responses"] = {
+            "path": str(Path(args.responses)),
+            "count": len(responses),
+        }
+        missing = [case.id for case in suite.cases if case.id not in responses]
+        extra = sorted(set(responses) - {case.id for case in suite.cases})
+        if missing:
+            report["ok"] = False
+            report["issues"].append(
+                {"type": "missing_responses", "case_ids": missing}
+            )
+        if extra:
+            report["issues"].append({"type": "extra_responses", "case_ids": extra})
+
+    if args.format == "json":
+        _emit(json.dumps(report, indent=2) + "\n", None)
+    else:
+        lines = [
+            f"Suite: {report['suite']['name']} (v{report['suite']['version']})",
+            f"Cases: {report['suite']['cases']}, Checks: {report['suite']['checks']}",
+        ]
+        if "responses" in report:
+            lines.append(f"Responses: {report['responses']['count']}")
+        if report["issues"]:
+            for issue in report["issues"]:
+                lines.append(f"Issue: {issue['type']} - {', '.join(issue['case_ids'])}")
+        lines.append(f"Status: {'OK' if report['ok'] else 'INVALID'}")
+        _emit("\n".join(lines) + "\n", None)
+    return EXIT_SUCCESS if report["ok"] else EXIT_FAILURE
