@@ -216,3 +216,30 @@ def _cmd_check(args: argparse.Namespace) -> int:
         lines.append(f"Status: {'OK' if report['ok'] else 'INVALID'}")
         _emit("\n".join(lines) + "\n", None)
     return EXIT_SUCCESS if report["ok"] else EXIT_FAILURE
+
+
+def _cmd_scan(args: argparse.Namespace) -> int:
+    harness = EvaluationHarness()
+    suite = harness.load_suite(args.suite)
+    cases_payload = []
+    for case in suite.cases:
+        item: dict[str, Any] = {
+            "id": case.id,
+            "description": case.description,
+            "tags": list(case.tags),
+            "checks": [dict(check) for check in case.checks],
+            "check_count": len(case.checks),
+        }
+        cases_payload.append(item)
+
+    payload = {
+        "suite": {
+            "path": str(Path(args.suite)),
+            "name": suite.name,
+            "version": suite.version,
+            "description": suite.description,
+            "case_count": len(suite.cases),
+            "check_count": sum(len(case.checks) for case in suite.cases),
+        },
+        "cases": cases_payload,
+    }
