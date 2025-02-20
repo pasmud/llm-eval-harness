@@ -243,3 +243,29 @@ def _cmd_scan(args: argparse.Namespace) -> int:
         },
         "cases": cases_payload,
     }
+
+    if args.format == "json":
+        _emit(json.dumps(payload, indent=2) + "\n", None)
+    else:
+        lines = [
+            f"Suite: {suite.name} (v{suite.version})",
+            f"Cases: {len(suite.cases)}, Checks: {payload['suite']['check_count']}",
+        ]
+        if suite.description:
+            lines.append(f"Description: {suite.description}")
+        lines.append("")
+        for case in suite.cases:
+            tags = f" tags={','.join(case.tags)}" if case.tags else ""
+            lines.append(f"- {case.id}{tags} ({len(case.checks)} checks)")
+            if case.description:
+                lines.append(f"  description: {case.description}")
+            if args.verbose:
+                for check in case.checks:
+                    lines.append(f"  check: {json.dumps(check, sort_keys=True)}")
+        _emit("\n".join(lines) + "\n", None)
+    return EXIT_SUCCESS
+
+
+def _cmd_list_evaluators(args: argparse.Namespace) -> int:
+    registry = builtin_registry()
+    names = registry.names()
