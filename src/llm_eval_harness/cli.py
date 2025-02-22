@@ -269,3 +269,29 @@ def _cmd_scan(args: argparse.Namespace) -> int:
 def _cmd_list_evaluators(args: argparse.Namespace) -> int:
     registry = builtin_registry()
     names = registry.names()
+    if args.format == "json":
+        _emit(json.dumps({"evaluators": names}, indent=2) + "\n", None)
+    else:
+        lines = ["Built-in evaluators:"]
+        for name in names:
+            lines.append(f"- {name}")
+        _emit("\n".join(lines) + "\n", None)
+    return EXIT_SUCCESS
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = _build_parser()
+    try:
+        args = parser.parse_args(argv)
+    except SystemExit as exc:
+        code = exc.code if isinstance(exc.code, int) else EXIT_USAGE
+        return code
+
+    try:
+        return int(args.func(args))
+    except EvaluationError as exc:
+        sys.stderr.write(f"error: {exc}\n")
+        return EXIT_FAILURE
+    except KeyboardInterrupt:
+        sys.stderr.write("error: interrupted\n")
+        return EXIT_FAILURE
