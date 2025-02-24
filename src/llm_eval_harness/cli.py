@@ -295,3 +295,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     except KeyboardInterrupt:
         sys.stderr.write("error: interrupted\n")
         return EXIT_FAILURE
+
+
+if __name__ == "__main__":  # pragma: no cover
+    raise SystemExit(main())
