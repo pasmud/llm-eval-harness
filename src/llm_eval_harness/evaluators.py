@@ -20,3 +20,9 @@ class Evaluator:
 
 def _get_string(check: dict[str, Any], key: str, default: str | None = None) -> str:
     value = check.get(key, default)
+    if value is None:
+        raise EvaluationError(f"evaluator '{check.get('type', '?')}' requires '{key}'")
+    if not isinstance(value, str):
+        raise EvaluationError(
+            f"evaluator '{check.get('type', '?')}' field '{key}' must be a string"
+        )
