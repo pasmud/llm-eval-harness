@@ -26,3 +26,10 @@ def _get_string(check: dict[str, Any], key: str, default: str | None = None) -> 
         raise EvaluationError(
             f"evaluator '{check.get('type', '?')}' field '{key}' must be a string"
         )
+    return value
+
+
+def _get_string_list(
+    check: dict[str, Any], key: str, required: bool = True
+) -> list[str]:
+    value = check.get(key)
