@@ -33,3 +33,13 @@ def _get_string_list(
     check: dict[str, Any], key: str, required: bool = True
 ) -> list[str]:
     value = check.get(key)
+    if value is None:
+        if required:
+            raise EvaluationError(
+                f"evaluator '{check.get('type', '?')}' requires '{key}'"
+            )
+        return []
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        raise EvaluationError(
+            f"evaluator '{check.get('type', '?')}' field '{key}' must be a list of strings"
+        )
