@@ -43,3 +43,12 @@ def _get_string_list(
         raise EvaluationError(
             f"evaluator '{check.get('type', '?')}' field '{key}' must be a list of strings"
         )
+    return list(value)
+
+
+def _get_bool(check: dict[str, Any], key: str, default: bool) -> bool:
+    value = check.get(key, default)
+    if not isinstance(value, bool):
+        raise EvaluationError(
+            f"evaluator '{check.get('type', '?')}' field '{key}' must be a boolean"
+        )
