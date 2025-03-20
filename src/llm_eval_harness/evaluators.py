@@ -52,3 +52,10 @@ def _get_bool(check: dict[str, Any], key: str, default: bool) -> bool:
         raise EvaluationError(
             f"evaluator '{check.get('type', '?')}' field '{key}' must be a boolean"
         )
+    return value
+
+
+def _get_int(
+    check: dict[str, Any], key: str, default: int | None = None, minimum: int | None = None
+) -> int:
+    value = check.get(key, default)
