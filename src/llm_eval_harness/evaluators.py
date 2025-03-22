@@ -59,3 +59,9 @@ def _get_int(
     check: dict[str, Any], key: str, default: int | None = None, minimum: int | None = None
 ) -> int:
     value = check.get(key, default)
+    if value is None:
+        raise EvaluationError(f"evaluator '{check.get('type', '?')}' requires '{key}'")
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise EvaluationError(
+            f"evaluator '{check.get('type', '?')}' field '{key}' must be an integer"
+        )
