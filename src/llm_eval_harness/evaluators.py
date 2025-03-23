@@ -65,3 +65,8 @@ def _get_int(
         raise EvaluationError(
             f"evaluator '{check.get('type', '?')}' field '{key}' must be an integer"
         )
+    if minimum is not None and value < minimum:
+        raise EvaluationError(
+            f"evaluator '{check.get('type', '?')}' field '{key}' must be >= {minimum}"
+        )
+    return value
