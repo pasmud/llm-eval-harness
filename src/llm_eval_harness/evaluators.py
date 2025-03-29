@@ -70,3 +70,24 @@ def _get_int(
             f"evaluator '{check.get('type', '?')}' field '{key}' must be >= {minimum}"
         )
     return value
+
+
+class ContainsEvaluator(Evaluator):
+    name = "contains"
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        value = _get_string(check, "value")
+        case_sensitive = _get_bool(check, "case_sensitive", False)
+        haystack = response if case_sensitive else response.lower()
+        needle = value if case_sensitive else value.lower()
+        passed = needle in haystack
+        return EvalOutcome(
+            evaluator=self.name,
+            verdict=EvalVerdict.PASS if passed else EvalVerdict.FAIL,
+            message=(
+                f"response contains expected substring {value!r}"
+                if passed
+                else f"response missing expected substring {value!r}"
+            ),
+            details={"value": value, "case_sensitive": case_sensitive},
+        )
