@@ -91,3 +91,24 @@ class ContainsEvaluator(Evaluator):
             ),
             details={"value": value, "case_sensitive": case_sensitive},
         )
+
+
+class NotContainsEvaluator(Evaluator):
+    name = "not_contains"
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        value = _get_string(check, "value")
+        case_sensitive = _get_bool(check, "case_sensitive", False)
+        haystack = response if case_sensitive else response.lower()
+        needle = value if case_sensitive else value.lower()
+        found = needle in haystack
+        return EvalOutcome(
+            evaluator=self.name,
+            verdict=EvalVerdict.FAIL if found else EvalVerdict.PASS,
+            message=(
+                f"response contains forbidden substring {value!r}"
+                if found
+                else f"response does not contain forbidden substring {value!r}"
+            ),
+            details={"value": value, "case_sensitive": case_sensitive},
+        )
