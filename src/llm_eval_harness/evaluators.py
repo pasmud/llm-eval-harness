@@ -147,3 +147,34 @@ class ContainsAnyEvaluator(Evaluator):
 
 class ContainsAllEvaluator(Evaluator):
     name = "contains_all"
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        values = _get_string_list(check, "values")
+        if not values:
+            raise EvaluationError("evaluator 'contains_all' requires non-empty 'values'")
+        case_sensitive = _get_bool(check, "case_sensitive", False)
+        haystack = response if case_sensitive else response.lower()
+        missing = [
+            value
+            for value in values
+            if (value if case_sensitive else value.lower()) not in haystack
+        ]
+        passed = not missing
+        return EvalOutcome(
+            evaluator=self.name,
+            verdict=EvalVerdict.PASS if passed else EvalVerdict.FAIL,
+            message=(
+                "response contains all expected values"
+                if passed
+                else f"response missing expected values: {missing!r}"
+            ),
+            details={
+                "values": values,
+                "missing": missing,
+                "case_sensitive": case_sensitive,
+            },
+        )
+
+
+class RegexEvaluator(Evaluator):
+    name = "regex"
