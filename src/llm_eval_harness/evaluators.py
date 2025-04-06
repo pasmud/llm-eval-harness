@@ -207,3 +207,32 @@ class RegexEvaluator(Evaluator):
 
 class NotRegexEvaluator(Evaluator):
     name = "not_regex"
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        pattern = _get_string(check, "pattern")
+        case_sensitive = _get_bool(check, "case_sensitive", True)
+        flags = 0 if case_sensitive else re.IGNORECASE
+        try:
+            compiled = re.compile(pattern, flags)
+        except re.error as exc:
+            raise EvaluationError(f"invalid regex pattern {pattern!r}: {exc}") from exc
+        match = compiled.search(response)
+        passed = match is None
+        return EvalOutcome(
+            evaluator=self.name,
+            verdict=EvalVerdict.PASS if passed else EvalVerdict.FAIL,
+            message=(
+                f"response does not match forbidden regex {pattern!r}"
+                if passed
+                else f"response matches forbidden regex {pattern!r}"
+            ),
+            details={
+                "pattern": pattern,
+                "case_sensitive": case_sensitive,
+                "match": match.group(0) if match else None,
+            },
+        )
+
+
+class StartsWithEvaluator(Evaluator):
+    name = "starts_with"
