@@ -178,3 +178,32 @@ class ContainsAllEvaluator(Evaluator):
 
 class RegexEvaluator(Evaluator):
     name = "regex"
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        pattern = _get_string(check, "pattern")
+        case_sensitive = _get_bool(check, "case_sensitive", True)
+        flags = 0 if case_sensitive else re.IGNORECASE
+        try:
+            compiled = re.compile(pattern, flags)
+        except re.error as exc:
+            raise EvaluationError(f"invalid regex pattern {pattern!r}: {exc}") from exc
+        match = compiled.search(response)
+        passed = match is not None
+        return EvalOutcome(
+            evaluator=self.name,
+            verdict=EvalVerdict.PASS if passed else EvalVerdict.FAIL,
+            message=(
+                f"response matches regex {pattern!r}"
+                if passed
+                else f"response does not match regex {pattern!r}"
+            ),
+            details={
+                "pattern": pattern,
+                "case_sensitive": case_sensitive,
+                "match": match.group(0) if match else None,
+            },
+        )
+
+
+class NotRegexEvaluator(Evaluator):
+    name = "not_regex"
