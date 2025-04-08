@@ -236,3 +236,25 @@ class NotRegexEvaluator(Evaluator):
 
 class StartsWithEvaluator(Evaluator):
     name = "starts_with"
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        value = _get_string(check, "value")
+        case_sensitive = _get_bool(check, "case_sensitive", False)
+        text = response.strip()
+        haystack = text if case_sensitive else text.lower()
+        needle = value if case_sensitive else value.lower()
+        passed = haystack.startswith(needle)
+        return EvalOutcome(
+            evaluator=self.name,
+            verdict=EvalVerdict.PASS if passed else EvalVerdict.FAIL,
+            message=(
+                f"response starts with {value!r}"
+                if passed
+                else f"response does not start with {value!r}"
+            ),
+            details={"value": value, "case_sensitive": case_sensitive},
+        )
+
+
+class EndsWithEvaluator(Evaluator):
+    name = "ends_with"
