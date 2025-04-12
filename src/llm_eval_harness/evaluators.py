@@ -258,3 +258,50 @@ class StartsWithEvaluator(Evaluator):
 
 class EndsWithEvaluator(Evaluator):
     name = "ends_with"
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        value = _get_string(check, "value")
+        case_sensitive = _get_bool(check, "case_sensitive", False)
+        text = response.strip()
+        haystack = text if case_sensitive else text.lower()
+        needle = value if case_sensitive else value.lower()
+        passed = haystack.endswith(needle)
+        return EvalOutcome(
+            evaluator=self.name,
+            verdict=EvalVerdict.PASS if passed else EvalVerdict.FAIL,
+            message=(
+                f"response ends with {value!r}"
+                if passed
+                else f"response does not end with {value!r}"
+            ),
+            details={"value": value, "case_sensitive": case_sensitive},
+        )
+
+
+class EqualsEvaluator(Evaluator):
+    name = "equals"
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        value = _get_string(check, "value")
+        case_sensitive = _get_bool(check, "case_sensitive", True)
+        strip = _get_bool(check, "strip", True)
+        left = response.strip() if strip else response
+        right = value.strip() if strip else value
+        if not case_sensitive:
+            left = left.lower()
+            right = right.lower()
+        passed = left == right
+        return EvalOutcome(
+            evaluator=self.name,
+            verdict=EvalVerdict.PASS if passed else EvalVerdict.FAIL,
+            message=(
+                "response equals expected value"
+                if passed
+                else "response does not equal expected value"
+            ),
+            details={
+                "value": value,
+                "case_sensitive": case_sensitive,
+                "strip": strip,
+            },
+        )
