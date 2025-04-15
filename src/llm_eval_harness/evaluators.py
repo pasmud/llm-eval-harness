@@ -305,3 +305,22 @@ class EqualsEvaluator(Evaluator):
                 "strip": strip,
             },
         )
+
+
+class MaxLengthEvaluator(Evaluator):
+    name = "max_length"
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        max_chars = _get_int(check, "max_chars", minimum=0)
+        actual = len(response)
+        passed = actual <= max_chars
+        return EvalOutcome(
+            evaluator=self.name,
+            verdict=EvalVerdict.PASS if passed else EvalVerdict.FAIL,
+            message=(
+                f"response length {actual} is within limit {max_chars}"
+                if passed
+                else f"response length {actual} exceeds limit {max_chars}"
+            ),
+            details={"max_chars": max_chars, "actual_chars": actual},
+        )
