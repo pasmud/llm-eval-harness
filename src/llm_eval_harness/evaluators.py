@@ -324,3 +324,22 @@ class MaxLengthEvaluator(Evaluator):
             ),
             details={"max_chars": max_chars, "actual_chars": actual},
         )
+
+
+class MinLengthEvaluator(Evaluator):
+    name = "min_length"
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        min_chars = _get_int(check, "min_chars", minimum=0)
+        actual = len(response)
+        passed = actual >= min_chars
+        return EvalOutcome(
+            evaluator=self.name,
+            verdict=EvalVerdict.PASS if passed else EvalVerdict.FAIL,
+            message=(
+                f"response length {actual} meets minimum {min_chars}"
+                if passed
+                else f"response length {actual} is below minimum {min_chars}"
+            ),
+            details={"min_chars": min_chars, "actual_chars": actual},
+        )
