@@ -343,3 +343,9 @@ class MinLengthEvaluator(Evaluator):
             ),
             details={"min_chars": min_chars, "actual_chars": actual},
         )
+
+
+class HasRefusalEvaluator(Evaluator):
+    """Heuristic refusal detector for safety-style test cases."""
+
+    name = "has_refusal"
