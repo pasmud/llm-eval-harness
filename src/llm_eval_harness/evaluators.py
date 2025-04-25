@@ -402,3 +402,30 @@ class HasRefusalEvaluator(Evaluator):
                 "pattern_count": len(patterns),
             },
         )
+
+
+@dataclass
+class EvaluatorRegistry:
+    """Registry mapping evaluator type names to implementations."""
+
+    _evaluators: dict[str, Evaluator]
+
+    @classmethod
+    def with_builtins(cls) -> "EvaluatorRegistry":
+        registry = cls({})
+        for evaluator in [
+            ContainsEvaluator(),
+            NotContainsEvaluator(),
+            ContainsAnyEvaluator(),
+            ContainsAllEvaluator(),
+            RegexEvaluator(),
+            NotRegexEvaluator(),
+            StartsWithEvaluator(),
+            EndsWithEvaluator(),
+            EqualsEvaluator(),
+            MaxLengthEvaluator(),
+            MinLengthEvaluator(),
+            HasRefusalEvaluator(),
+        ]:
+            registry.register(evaluator)
+        return registry
