@@ -429,3 +429,17 @@ class EvaluatorRegistry:
         ]:
             registry.register(evaluator)
         return registry
+
+    def register(self, evaluator: Evaluator) -> None:
+        name = evaluator.name.strip().lower()
+        if not name:
+            raise EvaluationError("evaluator name must not be empty")
+        self._evaluators[name] = evaluator
+
+    def get(self, name: str) -> Evaluator:
+        key = name.strip().lower()
+        evaluator = self._evaluators.get(key)
+        if evaluator is None:
+            known = ", ".join(sorted(self._evaluators))
+            raise EvaluationError(f"unknown evaluator type '{name}'. Known: {known}")
+        return evaluator
