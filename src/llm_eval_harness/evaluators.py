@@ -443,3 +443,30 @@ class EvaluatorRegistry:
             known = ", ".join(sorted(self._evaluators))
             raise EvaluationError(f"unknown evaluator type '{name}'. Known: {known}")
         return evaluator
+
+    def names(self) -> list[str]:
+        return sorted(self._evaluators)
+
+    def evaluate(self, response: str, check: dict[str, Any]) -> EvalOutcome:
+        check_type = check.get("type")
+        if not isinstance(check_type, str) or not check_type.strip():
+            return EvalOutcome(
+                evaluator="unknown",
+                verdict=EvalVerdict.ERROR,
+                message="check is missing a valid 'type'",
+            )
+        try:
+            evaluator = self.get(check_type)
+            return evaluator.evaluate(response, check)
+        except EvaluationError as exc:
+            return EvalOutcome(
+                evaluator=check_type,
+                verdict=EvalVerdict.ERROR,
+                message=str(exc),
+            )
+        except Exception as exc:  # defensive: evaluators should not crash the run
+            return EvalOutcome(
+                evaluator=check_type,
+                verdict=EvalVerdict.ERROR,
+                message=f"unexpected evaluator error: {exc}",
+            )
