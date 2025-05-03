@@ -470,3 +470,7 @@ class EvaluatorRegistry:
                 verdict=EvalVerdict.ERROR,
                 message=f"unexpected evaluator error: {exc}",
             )
+
+
+def builtin_registry() -> EvaluatorRegistry:
+    return EvaluatorRegistry.with_builtins()
