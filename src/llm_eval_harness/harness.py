@@ -18,3 +18,7 @@ from .models import (
     utc_now_iso,
 )
 from .providers import ResponseProvider, StaticResponseProvider
+
+
+def _load_json_file(path: str | Path, label: str) -> Any:
+    file_path = Path(path)
