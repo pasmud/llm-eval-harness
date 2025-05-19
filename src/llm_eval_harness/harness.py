@@ -22,3 +22,11 @@ from .providers import ResponseProvider, StaticResponseProvider
 
 def _load_json_file(path: str | Path, label: str) -> Any:
     file_path = Path(path)
+    try:
+        raw = file_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise EvaluationError(f"unable to read {label} '{file_path}': {exc}") from exc
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise EvaluationError(f"invalid JSON in {label} '{file_path}': {exc}") from exc
