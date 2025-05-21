@@ -30,3 +30,15 @@ def _load_json_file(path: str | Path, label: str) -> Any:
         return json.loads(raw)
     except json.JSONDecodeError as exc:
         raise EvaluationError(f"invalid JSON in {label} '{file_path}': {exc}") from exc
+
+
+class EvaluationHarness:
+    """Runs deterministic evaluation suites against a response provider."""
+
+    def __init__(
+        self,
+        registry: EvaluatorRegistry | None = None,
+        fail_fast: bool = False,
+    ) -> None:
+        self.registry = registry or builtin_registry()
+        self.fail_fast = fail_fast
