@@ -42,3 +42,8 @@ class EvaluationHarness:
     ) -> None:
         self.registry = registry or builtin_registry()
         self.fail_fast = fail_fast
+
+    @staticmethod
+    def load_suite(path: str | Path) -> Suite:
+        data = _load_json_file(path, "suite file")
+        return Suite.from_dict(data)
