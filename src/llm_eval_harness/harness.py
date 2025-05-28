@@ -148,3 +148,26 @@ class EvaluationHarness:
             finished_at=finished_at,
             metadata=dict(metadata or {}),
         )
+
+    def run_suite_from_files(
+        self,
+        suite_path: str | Path,
+        responses_path: str | Path,
+        default_response: str | None = None,
+    ) -> SuiteResult:
+        suite = self.load_suite(suite_path)
+        responses_data = _load_json_file(responses_path, "responses file")
+        from .providers import load_responses_data
+
+        responses = load_responses_data(responses_data)
+        provider = StaticResponseProvider(
+            responses=responses, default_response=default_response
+        )
+        return self.run_suite(
+            suite,
+            provider,
+            metadata={
+                "suite_path": str(Path(suite_path)),
+                "responses_path": str(Path(responses_path)),
+            },
+        )
