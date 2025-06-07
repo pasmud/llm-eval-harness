@@ -16,3 +16,12 @@ class EvalVerdict:
     """Verdict constants for an evaluation check."""
 
     PASS: str = "pass"
+    FAIL: str = "fail"
+    ERROR: str = "error"
+
+
+@dataclass
+class EvalOutcome:
+    """Result of a single evaluator check."""
+
+    evaluator: str
