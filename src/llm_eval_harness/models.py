@@ -25,3 +25,6 @@ class EvalOutcome:
     """Result of a single evaluator check."""
 
     evaluator: str
+    verdict: str
+    message: str
+    details: dict[str, Any] = field(default_factory=dict)
