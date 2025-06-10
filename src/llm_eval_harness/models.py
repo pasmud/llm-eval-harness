@@ -28,3 +28,25 @@ class EvalOutcome:
     verdict: str
     message: str
     details: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def passed(self) -> bool:
+        return self.verdict == EvalVerdict.PASS
+
+    def to_dict(self) -> dict[str, Any]:
+        data: dict[str, Any] = {
+            "evaluator": self.evaluator,
+            "verdict": self.verdict,
+            "passed": self.passed,
+            "message": self.message,
+        }
+        if self.details:
+            data["details"] = self.details
+        return data
+
+
+@dataclass
+class TestCase:
+    """A single evaluation case."""
+
+    __test__ = False
