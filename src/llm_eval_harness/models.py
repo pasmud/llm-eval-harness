@@ -50,3 +50,8 @@ class TestCase:
     """A single evaluation case."""
 
     __test__ = False
+
+    id: str
+    prompt: str
+    checks: list[dict[str, Any]]
+    description: str = ""
