@@ -118,3 +118,25 @@ class TestCase:
             tags=list(tags_raw),
             metadata=dict(metadata),
         )
+
+    def to_dict(self) -> dict[str, Any]:
+        data: dict[str, Any] = {
+            "id": self.id,
+            "prompt": self.prompt,
+            "checks": [dict(check) for check in self.checks],
+        }
+        if self.description:
+            data["description"] = self.description
+        if self.tags:
+            data["tags"] = list(self.tags)
+        if self.metadata:
+            data["metadata"] = dict(self.metadata)
+        return data
+
+
+@dataclass
+class Suite:
+    """A collection of evaluation cases."""
+
+    name: str
+    cases: list[TestCase]
