@@ -140,3 +140,6 @@ class Suite:
 
     name: str
     cases: list[TestCase]
+    description: str = ""
+    version: str = "1"
+    metadata: dict[str, Any] = field(default_factory=dict)
