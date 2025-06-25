@@ -143,3 +143,70 @@ class Suite:
     description: str = ""
     version: str = "1"
     metadata: dict[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "Suite":
+        if not isinstance(data, dict):
+            raise EvaluationError("suite must be an object")
+
+        name = data.get("name")
+        if not isinstance(name, str) or not name.strip():
+            raise EvaluationError("suite must have a non-empty 'name'")
+
+        raw_cases = data.get("cases")
+        if not isinstance(raw_cases, list) or not raw_cases:
+            raise EvaluationError("suite must define a non-empty 'cases' list")
+
+        cases: list[TestCase] = []
+        seen_ids: set[str] = set()
+        for index, raw_case in enumerate(raw_cases):
+            case = TestCase.from_dict(raw_case, index=index)
+            if case.id in seen_ids:
+                raise EvaluationError(f"duplicate case id '{case.id}'")
+            seen_ids.add(case.id)
+            cases.append(case)
+
+        description = data.get("description", "")
+        if description is None:
+            description = ""
+        if not isinstance(description, str):
+            raise EvaluationError("suite description must be a string")
+
+        version = data.get("version", "1")
+        if version is None:
+            version = "1"
+        if not isinstance(version, (str, int, float)):
+            raise EvaluationError("suite version must be a string or number")
+
+        metadata = data.get("metadata", {})
+        if metadata is None:
+            metadata = {}
+        if not isinstance(metadata, dict):
+            raise EvaluationError("suite metadata must be an object")
+
+        return cls(
+            name=name.strip(),
+            cases=cases,
+            description=description,
+            version=str(version),
+            metadata=dict(metadata),
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        data: dict[str, Any] = {
+            "name": self.name,
+            "version": self.version,
+            "cases": [case.to_dict() for case in self.cases],
+        }
+        if self.description:
+            data["description"] = self.description
+        if self.metadata:
+            data["metadata"] = dict(self.metadata)
+        return data
+
+
+@dataclass
+class CaseResult:
+    """Aggregated result for a single test case."""
+
+    case_id: str
