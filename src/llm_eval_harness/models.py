@@ -210,3 +210,6 @@ class CaseResult:
     """Aggregated result for a single test case."""
 
     case_id: str
+    prompt: str
+    response: str
+    outcomes: list[EvalOutcome]
