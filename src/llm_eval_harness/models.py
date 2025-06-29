@@ -213,3 +213,19 @@ class CaseResult:
     prompt: str
     response: str
     outcomes: list[EvalOutcome]
+    description: str = ""
+    tags: list[str] = field(default_factory=list)
+
+    @property
+    def passed(self) -> bool:
+        return all(outcome.passed for outcome in self.outcomes)
+
+    @property
+    def verdict(self) -> str:
+        if not self.outcomes:
+            return EvalVerdict.ERROR
+        if any(outcome.verdict == EvalVerdict.ERROR for outcome in self.outcomes):
+            return EvalVerdict.ERROR
+        if all(outcome.passed for outcome in self.outcomes):
+            return EvalVerdict.PASS
+        return EvalVerdict.FAIL
