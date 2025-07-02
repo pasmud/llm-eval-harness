@@ -229,3 +229,33 @@ class CaseResult:
         if all(outcome.passed for outcome in self.outcomes):
             return EvalVerdict.PASS
         return EvalVerdict.FAIL
+
+    @property
+    def checks_passed(self) -> int:
+        return sum(1 for outcome in self.outcomes if outcome.passed)
+
+    @property
+    def checks_total(self) -> int:
+        return len(self.outcomes)
+
+    def to_dict(self) -> dict[str, Any]:
+        data: dict[str, Any] = {
+            "case_id": self.case_id,
+            "verdict": self.verdict,
+            "passed": self.passed,
+            "prompt": self.prompt,
+            "response": self.response,
+            "checks_passed": self.checks_passed,
+            "checks_total": self.checks_total,
+            "outcomes": [outcome.to_dict() for outcome in self.outcomes],
+        }
+        if self.description:
+            data["description"] = self.description
+        if self.tags:
+            data["tags"] = list(self.tags)
+        return data
+
+
+@dataclass
+class SuiteResult:
+    """Aggregated result for a full suite run."""
