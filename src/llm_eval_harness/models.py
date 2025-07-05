@@ -259,3 +259,7 @@ class CaseResult:
 @dataclass
 class SuiteResult:
     """Aggregated result for a full suite run."""
+
+    suite_name: str
+    suite_version: str
+    case_results: list[CaseResult]
