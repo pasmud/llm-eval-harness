@@ -263,3 +263,10 @@ class SuiteResult:
     suite_name: str
     suite_version: str
     case_results: list[CaseResult]
+    started_at: str
+    finished_at: str
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def total(self) -> int:
+        return len(self.case_results)
