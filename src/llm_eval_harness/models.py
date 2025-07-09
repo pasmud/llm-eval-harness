@@ -270,3 +270,15 @@ class SuiteResult:
     @property
     def total(self) -> int:
         return len(self.case_results)
+
+    @property
+    def passed(self) -> int:
+        return sum(1 for result in self.case_results if result.verdict == EvalVerdict.PASS)
+
+    @property
+    def failed(self) -> int:
+        return sum(1 for result in self.case_results if result.verdict == EvalVerdict.FAIL)
+
+    @property
+    def errors(self) -> int:
+        return sum(1 for result in self.case_results if result.verdict == EvalVerdict.ERROR)
