@@ -282,3 +282,33 @@ class SuiteResult:
     @property
     def errors(self) -> int:
         return sum(1 for result in self.case_results if result.verdict == EvalVerdict.ERROR)
+
+    @property
+    def success(self) -> bool:
+        return self.total > 0 and self.failed == 0 and self.errors == 0
+
+    @property
+    def pass_rate(self) -> float:
+        if self.total == 0:
+            return 0.0
+        return self.passed / self.total
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "suite_name": self.suite_name,
+            "suite_version": self.suite_version,
+            "started_at": self.started_at,
+            "finished_at": self.finished_at,
+            "total": self.total,
+            "passed": self.passed,
+            "failed": self.failed,
+            "errors": self.errors,
+            "success": self.success,
+            "pass_rate": round(self.pass_rate, 6),
+            "case_results": [result.to_dict() for result in self.case_results],
+            "metadata": dict(self.metadata),
+        }
+
+
+def utc_now_iso() -> str:
+    """Return an ISO-8601 UTC timestamp with second precision."""
