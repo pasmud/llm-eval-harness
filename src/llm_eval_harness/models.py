@@ -312,3 +312,4 @@ class SuiteResult:
 
 def utc_now_iso() -> str:
     """Return an ISO-8601 UTC timestamp with second precision."""
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
