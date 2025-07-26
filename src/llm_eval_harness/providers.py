@@ -65,3 +65,77 @@ def _extract_response_value(value: Any, case_id: str) -> str:
     raise EvaluationError(
         f"response entry for case '{case_id}' must be a string, got {type(value).__name__}"
     )
+
+
+def load_responses_data(data: Any) -> dict[str, str]:
+    """Normalize supported response file formats into a case-id mapping."""
+    if isinstance(data, dict):
+        # Format 1: {"responses": {"id": "..."}} or {"responses": [{"id":..., "response":...}]}
+        if "responses" in data:
+            payload = data["responses"]
+            if isinstance(payload, list):
+                responses: dict[str, str] = {}
+                for index, item in enumerate(payload):
+                    if not isinstance(item, dict):
+                        raise EvaluationError(
+                            f"responses[{index}] must be an object with 'id' and response text"
+                        )
+                    case_id = item.get("id") or item.get("case_id")
+                    if not isinstance(case_id, str) or not case_id.strip():
+                        raise EvaluationError(
+                            f"responses[{index}] must include a non-empty 'id'"
+                        )
+                    if "response" in item:
+                        responses[case_id] = _extract_response_value(item["response"], case_id)
+                    elif "output" in item:
+                        responses[case_id] = _extract_response_value(item["output"], case_id)
+                    elif "text" in item:
+                        responses[case_id] = _extract_response_value(item["text"], case_id)
+                    else:
+                        raise EvaluationError(
+                            f"responses[{index}] for case '{case_id}' must include 'response'"
+                        )
+                return responses
+            if isinstance(payload, dict):
+                return {
+                    str(key): _extract_response_value(value, str(key))
+                    for key, value in payload.items()
+                }
+            raise EvaluationError("'responses' must be an object or a list")
+
+        # Format 2: plain mapping {"case-id": "response"}
+        if data and all(isinstance(v, (str, dict)) for v in data.values()):
+            # Heuristic: treat as mapping unless it looks like a single response object.
+            reserved = {"name", "version", "cases", "description", "metadata"}
+            if not reserved.intersection(data.keys()):
+                return {
+                    str(key): _extract_response_value(value, str(key))
+                    for key, value in data.items()
+                }
+
+        raise EvaluationError(
+            "unsupported responses object format; expected {'responses': ...} or a case-id mapping"
+        )
+
+    if isinstance(data, list):
+        # Format 3: [{"id": "case-1", "response": "..."}]
+        responses = {}
+        for index, item in enumerate(data):
+            if not isinstance(item, dict):
+                raise EvaluationError(
+                    f"responses[{index}] must be an object with 'id' and response text"
+                )
+            case_id = item.get("id") or item.get("case_id")
+            if not isinstance(case_id, str) or not case_id.strip():
+                raise EvaluationError(f"responses[{index}] must include a non-empty 'id'")
+            if "response" in item:
+                responses[case_id] = _extract_response_value(item["response"], case_id)
+            elif "output" in item:
+                responses[case_id] = _extract_response_value(item["output"], case_id)
+            elif "text" in item:
+                responses[case_id] = _extract_response_value(item["text"], case_id)
+            else:
+                raise EvaluationError(
+                    f"responses[{index}] for case '{case_id}' must include 'response'"
+                )
+        return responses
