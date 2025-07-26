@@ -48,3 +48,20 @@ class StaticResponseProvider:
         raise EvaluationError(
             f"no response provided for case '{case.id}' and no default_response configured"
         )
+
+
+def _extract_response_value(value: Any, case_id: str) -> str:
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        for key in ("response", "output", "text", "answer", "content"):
+            candidate = value.get(key)
+            if isinstance(candidate, str):
+                return candidate
+        raise EvaluationError(
+            f"response entry for case '{case_id}' must be a string or an object with a string "
+            "'response'/'output'/'text' field"
+        )
+    raise EvaluationError(
+        f"response entry for case '{case_id}' must be a string, got {type(value).__name__}"
+    )
