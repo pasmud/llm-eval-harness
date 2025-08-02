@@ -139,3 +139,9 @@ def load_responses_data(data: Any) -> dict[str, str]:
                     f"responses[{index}] for case '{case_id}' must include 'response'"
                 )
         return responses
+
+    raise EvaluationError("responses data must be an object or a list")
+
+
+def load_responses_file(path: str | Path) -> dict[str, str]:
+    """Load response mappings from a JSON file."""
