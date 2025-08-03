@@ -145,3 +145,14 @@ def load_responses_data(data: Any) -> dict[str, str]:
 
 def load_responses_file(path: str | Path) -> dict[str, str]:
     """Load response mappings from a JSON file."""
+    file_path = Path(path)
+    try:
+        raw = file_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise EvaluationError(f"unable to read responses file '{file_path}': {exc}") from exc
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise EvaluationError(
+            f"invalid JSON in responses file '{file_path}': {exc}"
+        ) from exc
