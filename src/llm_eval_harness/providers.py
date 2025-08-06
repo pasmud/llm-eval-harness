@@ -156,3 +156,4 @@ def load_responses_file(path: str | Path) -> dict[str, str]:
         raise EvaluationError(
             f"invalid JSON in responses file '{file_path}': {exc}"
         ) from exc
+    return load_responses_data(data)
