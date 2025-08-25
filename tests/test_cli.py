@@ -11,3 +11,10 @@ import unittest
 from pathlib import Path
 
 import tests._paths  # noqa: F401
+
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+
+
+def run_cli(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
