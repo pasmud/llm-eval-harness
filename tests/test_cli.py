@@ -143,3 +143,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(listing.returncode, 0, msg=listing.stderr)
         payload = json.loads(listing.stdout)
         self.assertIn("has_refusal", payload["evaluators"])
+
+
+if __name__ == "__main__":
+    unittest.main()
