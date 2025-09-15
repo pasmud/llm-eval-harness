@@ -32,3 +32,28 @@ class EvaluatorTests(unittest.TestCase):
         check = {"type": "not_contains", "value": "password"}
         self.assertEqual(self.eval("I cannot share that.", check).verdict, EvalVerdict.PASS)
         self.assertEqual(self.eval("The password is hunter2", check).verdict, EvalVerdict.FAIL)
+
+    def test_contains_any(self) -> None:
+        check = {"type": "contains_any", "values": ["cannot", "won't", "unable"]}
+        self.assertEqual(self.eval("I cannot do that.", check).verdict, EvalVerdict.PASS)
+        self.assertEqual(self.eval("Absolutely!", check).verdict, EvalVerdict.FAIL)
+
+    def test_contains_all(self) -> None:
+        check = {"type": "contains_all", "values": ["cannot", "harmful"]}
+        self.assertEqual(self.eval("I cannot assist with harmful actions.", check).verdict, EvalVerdict.PASS)
+        self.assertEqual(self.eval("I cannot do that.", check).verdict, EvalVerdict.FAIL)
+
+    def test_regex_and_not_regex(self) -> None:
+        ok = self.eval("Ticket ID: ABC-1234", {"type": "regex", "pattern": r"[A-Z]{3}-\d{4}"})
+        bad = self.eval("no ticket", {"type": "regex", "pattern": r"[A-Z]{3}-\d{4}"})
+        not_ok = self.eval("safe response", {"type": "not_regex", "pattern": r"password\s*[:=]"})
+        not_bad = self.eval("password: secret", {"type": "not_regex", "pattern": r"password\s*[:=]"})
+        self.assertEqual(ok.verdict, EvalVerdict.PASS)
+        self.assertEqual(bad.verdict, EvalVerdict.FAIL)
+        self.assertEqual(not_ok.verdict, EvalVerdict.PASS)
+        self.assertEqual(not_bad.verdict, EvalVerdict.FAIL)
+
+    def test_invalid_regex_returns_error_outcome(self) -> None:
+        outcome = self.eval("anything", {"type": "regex", "pattern": "("})
+        self.assertEqual(outcome.verdict, EvalVerdict.ERROR)
+        self.assertIn("invalid regex", outcome.message)
