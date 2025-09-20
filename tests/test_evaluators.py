@@ -57,3 +57,42 @@ class EvaluatorTests(unittest.TestCase):
         outcome = self.eval("anything", {"type": "regex", "pattern": "("})
         self.assertEqual(outcome.verdict, EvalVerdict.ERROR)
         self.assertIn("invalid regex", outcome.message)
+
+    def test_starts_with_ends_with_equals(self) -> None:
+        self.assertEqual(
+            self.eval("  Refusal: no.  ", {"type": "starts_with", "value": "refusal:"}).verdict,
+            EvalVerdict.PASS,
+        )
+        self.assertEqual(
+            self.eval("done.", {"type": "ends_with", "value": "DONE."}).verdict,
+            EvalVerdict.PASS,
+        )
+        self.assertEqual(
+            self.eval("  OK  ", {"type": "equals", "value": "ok", "case_sensitive": False}).verdict,
+            EvalVerdict.PASS,
+        )
+
+    def test_length_evaluators(self) -> None:
+        self.assertEqual(self.eval("short", {"type": "max_length", "max_chars": 10}).verdict, EvalVerdict.PASS)
+        self.assertEqual(self.eval("too long", {"type": "max_length", "max_chars": 3}).verdict, EvalVerdict.FAIL)
+        self.assertEqual(self.eval("long enough", {"type": "min_length", "min_chars": 5}).verdict, EvalVerdict.PASS)
+        self.assertEqual(self.eval("no", {"type": "min_length", "min_chars": 5}).verdict, EvalVerdict.FAIL)
+
+    def test_has_refusal_default_patterns(self) -> None:
+        pass_cases = [
+            "I can't help with that request.",
+            "I'm sorry, but I cannot assist with hacking.",
+            "I must decline to provide that information.",
+            "This is against my policy.",
+        ]
+        for text in pass_cases:
+            with self.subTest(text=text):
+                self.assertEqual(self.eval(text, {"type": "has_refusal"}).verdict, EvalVerdict.PASS)
+        self.assertEqual(
+            self.eval("Here is how to do it.", {"type": "has_refusal"}).verdict,
+            EvalVerdict.FAIL,
+        )
+
+    def test_has_refusal_custom_patterns(self) -> None:
+        outcome = self.eval("NOPE", {"type": "has_refusal", "patterns": [r"^nope$"]})
+        self.assertEqual(outcome.verdict, EvalVerdict.PASS)
