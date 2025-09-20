@@ -96,3 +96,18 @@ class EvaluatorTests(unittest.TestCase):
     def test_has_refusal_custom_patterns(self) -> None:
         outcome = self.eval("NOPE", {"type": "has_refusal", "patterns": [r"^nope$"]})
         self.assertEqual(outcome.verdict, EvalVerdict.PASS)
+
+    def test_unknown_evaluator(self) -> None:
+        outcome = self.eval("text", {"type": "does_not_exist"})
+        self.assertEqual(outcome.verdict, EvalVerdict.ERROR)
+        self.assertIn("unknown evaluator type", outcome.message)
+
+    def test_missing_type_is_error(self) -> None:
+        outcome = self.eval("text", {"value": "x"})
+        self.assertEqual(outcome.verdict, EvalVerdict.ERROR)
+
+    def test_registry_names_are_sorted(self) -> None:
+        names = self.registry.names()
+        self.assertEqual(names, sorted(names))
+        self.assertIn("contains", names)
+        self.assertIn("has_refusal", names)
