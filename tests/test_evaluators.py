@@ -111,3 +111,7 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(names, sorted(names))
         self.assertIn("contains", names)
         self.assertIn("has_refusal", names)
+
+
+if __name__ == "__main__":
+    unittest.main()
