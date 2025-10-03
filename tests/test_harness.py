@@ -6,3 +6,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+
+import tests._paths  # noqa: F401
+
+from llm_eval_harness.harness import EvaluationHarness
