@@ -10,3 +10,5 @@ from pathlib import Path
 import tests._paths  # noqa: F401
 
 from llm_eval_harness.harness import EvaluationHarness
+from llm_eval_harness.models import EvaluationError, EvalVerdict, Suite
+from llm_eval_harness.providers import StaticResponseProvider
