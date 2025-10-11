@@ -101,3 +101,32 @@ class HarnessTests(unittest.TestCase):
         result = harness.run_suite(suite, provider)
         self.assertEqual(result.failed, 1)
         self.assertEqual(len(result.case_results[0].outcomes), 1)
+
+    def test_run_suite_from_files(self) -> None:
+        suite_data = {
+            "name": "file-suite",
+            "cases": [
+                {
+                    "id": "c1",
+                    "prompt": "p",
+                    "checks": [{"type": "equals", "value": "ok", "case_sensitive": False}],
+                }
+            ],
+        }
+        responses_data = {"c1": "OK"}
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            suite_path = root / "suite.json"
+            responses_path = root / "responses.json"
+            suite_path.write_text(json.dumps(suite_data), encoding="utf-8")
+            responses_path.write_text(json.dumps(responses_data), encoding="utf-8")
+            result = EvaluationHarness().run_suite_from_files(suite_path, responses_path)
+        self.assertTrue(result.success)
+        self.assertEqual(result.total, 1)
+
+    def test_load_suite_invalid_json(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "suite.json"
+            path.write_text("{bad", encoding="utf-8")
+            with self.assertRaises(EvaluationError):
+                EvaluationHarness.load_suite(path)
