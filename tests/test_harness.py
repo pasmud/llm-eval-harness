@@ -130,3 +130,7 @@ class HarnessTests(unittest.TestCase):
             path.write_text("{bad", encoding="utf-8")
             with self.assertRaises(EvaluationError):
                 EvaluationHarness.load_suite(path)
+
+
+if __name__ == "__main__":
+    unittest.main()
