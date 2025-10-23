@@ -24,3 +24,11 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(case.id, "c1")
         self.assertEqual(case.description, "")
         self.assertEqual(case.tags, [])
+
+    def test_test_case_requires_checks(self) -> None:
+        with self.assertRaises(EvaluationError):
+            TestCase.from_dict({"id": "c1", "prompt": "hello", "checks": []})
+
+    def test_test_case_rejects_bad_check(self) -> None:
+        with self.assertRaises(EvaluationError):
+            TestCase.from_dict({"id": "c1", "prompt": "hello", "checks": [{"value": "x"}]})
