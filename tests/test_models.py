@@ -32,3 +32,39 @@ class ModelTests(unittest.TestCase):
     def test_test_case_rejects_bad_check(self) -> None:
         with self.assertRaises(EvaluationError):
             TestCase.from_dict({"id": "c1", "prompt": "hello", "checks": [{"value": "x"}]})
+
+    def test_suite_from_dict_and_round_trip_shape(self) -> None:
+        suite = Suite.from_dict(
+            {
+                "name": "demo",
+                "version": 2,
+                "description": "desc",
+                "cases": [
+                    {
+                        "id": "a",
+                        "prompt": "p",
+                        "checks": [{"type": "contains", "value": "x"}],
+                    }
+                ],
+            }
+        )
+        self.assertEqual(suite.version, "2")
+        data = suite.to_dict()
+        self.assertEqual(data["name"], "demo")
+        self.assertEqual(data["cases"][0]["id"], "a")
+
+    def test_suite_rejects_duplicate_case_ids(self) -> None:
+        with self.assertRaises(EvaluationError):
+            Suite.from_dict(
+                {
+                    "name": "dup",
+                    "cases": [
+                        {"id": "same", "prompt": "p1", "checks": [{"type": "contains", "value": "a"}]},
+                        {"id": "same", "prompt": "p2", "checks": [{"type": "contains", "value": "b"}]},
+                    ],
+                }
+            )
+
+    def test_suite_rejects_empty_cases(self) -> None:
+        with self.assertRaises(EvaluationError):
+            Suite.from_dict({"name": "empty", "cases": []})
