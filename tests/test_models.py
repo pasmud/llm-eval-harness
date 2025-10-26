@@ -68,3 +68,31 @@ class ModelTests(unittest.TestCase):
     def test_suite_rejects_empty_cases(self) -> None:
         with self.assertRaises(EvaluationError):
             Suite.from_dict({"name": "empty", "cases": []})
+
+    def test_case_result_aggregation(self) -> None:
+        result = CaseResult(
+            case_id="c1",
+            prompt="p",
+            response="r",
+            outcomes=[
+                EvalOutcome("contains", EvalVerdict.PASS, "ok"),
+                EvalOutcome("regex", EvalVerdict.FAIL, "bad"),
+            ],
+        )
+        self.assertFalse(result.passed)
+        self.assertEqual(result.verdict, EvalVerdict.FAIL)
+        self.assertEqual(result.checks_passed, 1)
+        self.assertEqual(result.checks_total, 2)
+
+    def test_case_result_error_verdict(self) -> None:
+        result = CaseResult(
+            case_id="c1",
+            prompt="p",
+            response="r",
+            outcomes=[
+                EvalOutcome("contains", EvalVerdict.PASS, "ok"),
+                EvalOutcome("regex", EvalVerdict.ERROR, "broken"),
+            ],
+        )
+        self.assertEqual(result.verdict, EvalVerdict.ERROR)
+        self.assertFalse(result.passed)
