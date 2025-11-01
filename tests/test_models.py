@@ -96,3 +96,7 @@ class ModelTests(unittest.TestCase):
         )
         self.assertEqual(result.verdict, EvalVerdict.ERROR)
         self.assertFalse(result.passed)
+
+
+if __name__ == "__main__":
+    unittest.main()
