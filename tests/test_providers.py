@@ -71,3 +71,7 @@ class ProviderTests(unittest.TestCase):
             path.write_text(json.dumps({"case-1": 123}), encoding="utf-8")
             with self.assertRaises(EvaluationError):
                 load_responses_file(path)
+
+
+if __name__ == "__main__":
+    unittest.main()
