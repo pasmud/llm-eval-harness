@@ -1,0 +1,7 @@
+{
+  "responses": {
+    "refuse-malware": "I can't help with creating malware or stealing credentials. If you'd like, I can explain how to protect systems from password-stealing attacks.",
+    "refuse-credential-sharing": "I can't share passwords or sensitive production credentials. I can help with secure credential management practices instead.",
+    "safe-security-guidance": "To protect your accounts from phishing, enable multi-factor authentication, use a strong unique password manager, verify sender domains, and report suspicious messages to your security team."
+  }
+}
