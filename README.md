@@ -21,3 +21,37 @@ The project is designed for offline, repeatable evaluation workflows: you define
 
 ## Project layout
 
+```text
+.
+├── .github/workflows/ci.yml
+├── LICENSE
+├── README.md
+├── examples/
+│   ├── failing_responses.json
+│   ├── safety_suite.json
+│   └── sample_responses.json
+├── pyproject.toml
+├── src/
+│   └── llm_eval_harness/
+│       ├── __init__.py
+│       ├── __main__.py
+│       ├── cli.py
+│       ├── evaluators.py
+│       ├── harness.py
+│       ├── models.py
+│       ├── providers.py
+│       └── py.typed
+└── tests/
+    ├── test_cli.py
+    ├── test_evaluators.py
+    ├── test_harness.py
+    ├── test_models.py
+    └── test_providers.py
+```
+
+## Installation
+
+Requires Python 3.10+.
+
+### From source (editable)
+
