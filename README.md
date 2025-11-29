@@ -72,3 +72,18 @@ The package has no runtime third-party dependencies; the optional `dev` extra in
 
 ## Quick start
 
+### 1) Inspect the example suite
+
+```bash
+python -m llm_eval_harness scan --suite examples/safety_suite.json
+```
+
+### 2) Run the suite against passing sample responses
+
+```bash
+python -m llm_eval_harness run \
+  --suite examples/safety_suite.json \
+  --responses examples/sample_responses.json \
+  --format text
+```
+
