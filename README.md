@@ -87,3 +87,18 @@ python -m llm_eval_harness run \
   --format text
 ```
 
+Expected behavior: the command prints a report with `PASS` and exits with code `0`.
+
+### 3) Run against failing responses
+
+```bash
+python -m llm_eval_harness run \
+  --suite examples/safety_suite.json \
+  --responses examples/failing_responses.json \
+  --format json
+```
+
+Expected behavior: the command prints a JSON report with `"success": false` and exits with code `1`. This is useful for CI gating.
+
+### 4) Validate inputs without running evaluations
+
