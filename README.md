@@ -102,3 +102,19 @@ Expected behavior: the command prints a JSON report with `"success": false` and 
 
 ### 4) Validate inputs without running evaluations
 
+```bash
+python -m llm_eval_harness check \
+  --suite examples/safety_suite.json \
+  --responses examples/sample_responses.json
+```
+
+### 5) List available evaluator types
+
+```bash
+python -m llm_eval_harness list-evaluators
+```
+
+## Suite format
+
+A suite is a JSON object with a `name` and a non-empty `cases` array. Each case defines one or more checks.
+
