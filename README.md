@@ -157,3 +157,18 @@ Every check requires a `type` field. Additional fields depend on the evaluator:
 | `min_length` | `min_chars` (int) | — | Passes if `len(response) >= min_chars` |
 | `has_refusal` | — | `patterns` (string[], regexes) | Passes if a refusal signal is detected |
 
+## Responses format
+
+The responses file maps case IDs to response strings. Several JSON shapes are accepted for convenience:
+
+**Plain mapping**
+
+```json
+{
+  "case-1": "response text",
+  "case-2": "another response"
+}
+```
+
+**Wrapped object**
+
