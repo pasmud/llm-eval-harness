@@ -172,3 +172,31 @@ The responses file maps case IDs to response strings. Several JSON shapes are ac
 
 **Wrapped object**
 
+```json
+{
+  "responses": {
+    "case-1": "response text",
+    "case-2": { "response": "another response" }
+  }
+}
+```
+
+**List format**
+
+```json
+[
+  { "id": "case-1", "response": "response text" },
+  { "case_id": "case-2", "output": "another response" }
+]
+```
+
+## CLI reference
+
+```text
+python -m llm_eval_harness --help
+python -m llm_eval_harness run --suite SUITE.json --responses RESPONSES.json [--format text|json] [--output FILE] [--fail-fast] [--default-response TEXT]
+python -m llm_eval_harness check --suite SUITE.json [--responses RESPONSES.json] [--format text|json]
+python -m llm_eval_harness scan --suite SUITE.json [--format text|json] [--verbose]
+python -m llm_eval_harness list-evaluators [--format text|json]
+```
+
