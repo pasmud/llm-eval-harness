@@ -200,3 +200,13 @@ python -m llm_eval_harness scan --suite SUITE.json [--format text|json] [--verbo
 python -m llm_eval_harness list-evaluators [--format text|json]
 ```
 
+### Exit codes
+
+- `0`: command succeeded (for `run`, all cases passed)
+- `1`: evaluation/check failure or runtime error (invalid input, missing responses, failed checks)
+- `2`: CLI usage error (unknown arguments, missing required flags)
+
+## Architecture and behavior
+
+The harness is split into small, testable modules:
+
