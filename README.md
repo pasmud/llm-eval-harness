@@ -210,3 +210,20 @@ python -m llm_eval_harness list-evaluators [--format text|json]
 
 The harness is split into small, testable modules:
 
+- **`models.py`**: dataclasses for suites, cases, outcomes, and aggregated results. Validation happens at load time to fail early on malformed inputs.
+- **`evaluators.py`**: evaluator interface and built-in registry. Each evaluator returns an `EvalOutcome` with a verdict (`pass`, `fail`, or `error`), a human message, and structured details. Evaluator exceptions are captured as error outcomes so a bad check does not crash the whole run.
+- **`providers.py`**: `ResponseProvider` protocol and `StaticResponseProvider` for deterministic fixture-based runs. Response file loaders normalize multiple JSON formats into a case-id mapping.
+- **`harness.py`**: orchestrates suite execution. For each case it resolves a response, runs checks in order, and aggregates case/suite results. `fail_fast` stops check evaluation on first non-passing check for a case.
+- **`cli.py`**: argparse-based CLI with JSON/text rendering and stable exit codes for automation.
+
+### Evaluation semantics
+
+- A case **passes** when every check passes.
+- A case **fails** when any check fails and no check errors.
+- A case **errors** when a check or provider returns/errors with an evaluation error (e.g., missing response, invalid regex, unknown evaluator).
+- A suite **succeeds** only when all cases pass and there are no errors.
+
+## Testing
+
+Run the unit test suite with either unittest or pytest:
+
