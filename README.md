@@ -227,3 +227,15 @@ The harness is split into small, testable modules:
 
 Run the unit test suite with either unittest or pytest:
 
+```bash
+python -m unittest discover -v
+```
+
+or
+
+```bash
+python -m pytest -q
+```
+
+The CLI smoke tests invoke `python -m llm_eval_harness` as a subprocess and set `PYTHONPATH=src` so they work from a source checkout without installation.
+
