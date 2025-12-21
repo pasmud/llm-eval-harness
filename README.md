@@ -239,3 +239,17 @@ python -m pytest -q
 
 The CLI smoke tests invoke `python -m llm_eval_harness` as a subprocess and set `PYTHONPATH=src` so they work from a source checkout without installation.
 
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) installs the package and runs `python -m pytest -q` on Python 3.10 through 3.13 for pushes and pull requests.
+
+## Limitations
+
+- **Static responses only**: the harness evaluates pre-recorded responses. It does not call LLM APIs, manage prompts against live models, or capture generations.
+- **Heuristic refusal detection**: `has_refusal` uses regex patterns for deterministic matching. It is a practical smoke-test signal, not a complete safety classifier; customize `patterns` for domain-specific needs.
+- **No statistical metrics**: the harness reports deterministic pass/fail counts and pass rate. It does not compute inter-rater agreement, confidence intervals, or model-quality benchmarks.
+- **JSON-only suite/response inputs**: the current loader accepts JSON files. YAML or CSV ingestion can be layered externally by converting to the supported schema.
+- **Synchronous execution**: suites run sequentially in-process, which is appropriate for deterministic fixture evaluation but not optimized for very large distributed workloads.
+
+## License
+
