@@ -253,3 +253,4 @@ GitHub Actions (`.github/workflows/ci.yml`) installs the package and runs `pytho
 
 ## License
 
+MIT. See [LICENSE](LICENSE).
